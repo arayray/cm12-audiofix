@@ -12,13 +12,18 @@ import android.telephony.TelephonyManager;
 public class SpeakerFix extends Service {
 
 
-    @Override
+    private SpeakerFix mContext;
+
+	@Override
     public IBinder onBind(Intent arg0) {
         return null;
     }
 
     @Override
     public void onCreate() {
+    	
+    	mContext = this;
+    	
         TelephonyManager TelephonyMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         TelephonyMgr.listen(new TeleListener(),
                 PhoneStateListener.LISTEN_CALL_STATE);
@@ -38,8 +43,10 @@ public class SpeakerFix extends Service {
                 	
                     // TOGGLE SPEAKER
                 	audioManager.setSpeakerphoneOn(true);
-
                 	audioManager.setSpeakerphoneOn(false);
+                	
+                	// KILL SERVICE AND WAIT FOR NEXT CALL
+                	mContext.stopSelf();
 
                     break;
                 case TelephonyManager.CALL_STATE_RINGING:
